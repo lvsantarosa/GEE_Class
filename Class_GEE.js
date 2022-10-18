@@ -1,4 +1,4 @@
-//https://courses.spatialthoughts.com/end-to-end-gee.html#basic-supervised-classification
+https://code.earthengine.google.com/?scriptPath=users%2Flucassantarosa%2FCompartilhados%3AClass_Acuti_Pereira
 
 //Ajustes iniciais
 //1. Fazer o upload dos arquivos do shp compactados .zip
