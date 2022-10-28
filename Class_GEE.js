@@ -1,13 +1,12 @@
-https://code.earthengine.google.com/?scriptPath=users%2Flucassantarosa%2FCompartilhados%3AClass_Acuti_Pereira
 
-//Ajustes iniciais
-//1. Fazer o upload dos arquivos do shp compactados .zip
-//2. Selcionar a ferramenta de desenho e selecionar amostras de não floresta e floresta
-//3. Editar as geometrias
-//a) Renomear as geometrias (amostras), 
-//b) Selecionar import as "FeatureCollection", 
-//c) Em Property escrever "landcover" e em Value "0" para floresta e "1" par não floresta
-//4. Renomear os arquivos e pasta para exportar 
+//Initial settings
+//1. Upload .zip compressed shp files and set with roi
+//2. Select the drawing tool and select non-forest and forest swatches
+//3. Edit the Geometries
+//a) Rename the geometries (samples),
+//b) Select import as "FeatureCollection",
+//c) In Property write "landcover" and in Value "0" for forest and "1" non-forest pair
+//4. Rename files and folder to export
 
 //Indices (only ndvi and bsi)
 var addIndices = function(image) {
@@ -169,11 +168,7 @@ var Exp_comp_2022 = comp_2022.select("B2", "B3", "B4", "B8", "ndvi", "bsi")
   }
 });
 
-
-//************************************************************************** 
 // Accuracy Assessment
-//************************************************************************** 
-
 // Use classification map to assess accuracy using the validation fraction
 // of the overall training set created above.
 var test_2022 = classified_2022.sampleRegions({
