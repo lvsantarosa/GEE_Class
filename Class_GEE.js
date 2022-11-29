@@ -1,4 +1,10 @@
 
+// ******************************************************************************************
+//  * Institution:  Sao Paulo State University 
+//  * Author:       Lucas Vituri Santarosa
+//  * Email:        lucas.santarosa@unesp.br
+//  ******************************************************************************************
+
 //Initial settings
 //1. Upload .zip compressed shp files and set with roi
 //2. Select the drawing tool and select non-forest and forest swatches
