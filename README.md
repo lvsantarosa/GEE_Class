@@ -14,3 +14,5 @@ Initial settings
 for forest and "1" non-forest pair
 
 4. Rename files and folder to export
+
+Exemple in GEE: https://code.earthengine.google.com/3f8bb1d013c2555258b8cdbf9c13aeee
