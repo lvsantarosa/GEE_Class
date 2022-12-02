@@ -34,7 +34,7 @@ function normalize(image){
   var minDict = image.reduceRegion({
     reducer: ee.Reducer.min(),
     geometry: roi,
-    scale: 10,
+    scale: 20,
     maxPixels: 1e9,
     bestEffort: true,
     tileScale: 16
@@ -65,18 +65,20 @@ var rgbVis = {
 
 var img2022 = s2
   .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 30))
-  .filter(ee.Filter.date('2022-10-04', '2022-10-06')) //Select the range of date
+  .filter(ee.Filter.date('2022-09-04', '2022-10-06')) //Select the range of date
   .filter(ee.Filter.bounds(roi))
-  .select('B.*')
+  
   
 print(img2022)
 
-var comp_2022 = img2022.median().clip(roi); //reduce and clip
+var comp_2022 = img2022.median().clip(roi).select('B2', 'B3', 'B4', 'B8', 'B11'); 
 var comp_2022 = addIndices(comp_2022); 
 var comp_2022 = normalize(comp_2022);
 
 // Display the input composite.
 Map.addLayer(comp_2022, rgbVis, 'image');
+Map.addLayer(roi);
+Map.centerObject(roi, 10);
 
 //Display indices
 var ndvi = comp_2022.select("ndvi")
@@ -86,7 +88,7 @@ Map.addLayer(ndvi, {palette: ['white','red','orange','yellow','green'],min: -0.4
 Map.addLayer(bsi, {palette: ['red','white','blue'],min: -0.4, max: 1}, 'bsi');
 
 // Merge the samples
-var gcp = forest.merge(no_forest).merge(water) //the first clase is 0
+var gcp = forest.merge(no_forest).merge(forest) //the first clase is 0
 
 // Overlay the point on the image to get training data.
 var train_2022 = comp_2022.sampleRegions({
@@ -189,4 +191,3 @@ var testConfusionMatrix_2022 = test_2022.errorMatrix('landcover', 'classificatio
 // Printing of confusion matrix may time out. Alternatively, you can export it as CSV
 print('Confusion Matrix 2022', testConfusionMatrix_2022);
 print('Test Accuracy 2022', testConfusionMatrix_2022.accuracy());
-
