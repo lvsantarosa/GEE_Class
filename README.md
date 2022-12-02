@@ -16,3 +16,5 @@ for forest and "1" non-forest pair
 4. Rename files and folder to export
 
 Exemple in GEE: https://code.earthengine.google.com/9f1b2fe299ac6abc265b0c4e1c790b76?hideCode=true
+
+![image](https://user-images.githubusercontent.com/60663771/205303561-bc0e4a30-3584-4a3f-994b-a1abcc47ab01.png)
