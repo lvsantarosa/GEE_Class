@@ -11,8 +11,20 @@
 //3. Edit the Geometries
 //a) Rename the geometries (samples),
 //b) Select import as "FeatureCollection",
-//c) In Property write "landcover" and in Value "0" for forest and "1" non-forest pair
+//c) In Property write "landcover" and in Value "1" for forest and "0" non-forest pair
 //4. Rename files and folder to export
+
+//Cloud Mask
+//https://courses.spatialthoughts.com/end-to-end-gee.html#basic-supervised-classification
+function maskS2sr(image) {
+  var cloudBitMask = ee.Number(2).pow(10).int();  // Bits 10 - clouds 
+  var cirrusBitMask = ee.Number(2).pow(11).int(); // Bits 11 - cirrus
+  var qa = image.select('QA60'); // Get the pixel QA band.
+  var mask = qa.bitwiseAnd(cloudBitMask).eq(0) // All flags should be set to zero, indicating clear conditions
+      .and(qa.bitwiseAnd(cirrusBitMask).eq(0));
+  return image.updateMask(mask)
+      .copyProperties(image, ["system:time_start"]);
+}
 
 //Indices (only ndvi and bsi)
 var addIndices = function(image) {
@@ -57,23 +69,25 @@ function normalize(image){
 //Prepare the images 
 var s2 = ee.ImageCollection("COPERNICUS/S2_SR")
 var rgbVis = {
-  gamma: 2,
+  gamma: 1.2,
   min: 0,
-  max: 1,
+  max: 5000,
   bands: ['B4', 'B3', 'B2'],
 };
 
 var img2022 = s2
   .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 30))
-  .filter(ee.Filter.date('2022-09-04', '2022-10-06')) //Select the range of date
+  .filter(ee.Filter.date('2022-08-01', '2022-10-31')) //Select the range of date
   .filter(ee.Filter.bounds(roi))
+  .map(maskS2sr)
   
   
 print(img2022)
 
 var comp_2022 = img2022.median().clip(roi).select('B2', 'B3', 'B4', 'B8', 'B11'); 
+//var comp_2022 = normalize(comp_2022); //This operation can be slow if you use this correction in necessary change the rgbVis to min = 0 and max = 1
 var comp_2022 = addIndices(comp_2022); 
-var comp_2022 = normalize(comp_2022);
+
 
 // Display the input composite.
 Map.addLayer(comp_2022, rgbVis, 'image');
