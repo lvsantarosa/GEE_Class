@@ -17,7 +17,8 @@ This is an exercise of classification to land use land cover. See the initial aj
   c) In the example we In Property write "landcover" and in Value "1" for forest and "0" non-forest pair
 
 ### 4. Rename files and folder to export
+#### New 15/03/2023: Use of SAR from Sentinel 1 with additional layers
 
-Exemple in GEE: https://code.earthengine.google.com/9f1b2fe299ac6abc265b0c4e1c790b76?hideCode=true
+Exemple in GEE: https://code.earthengine.google.com/dde2985b07983e2e944f4da46b541628
 
 ![image](https://user-images.githubusercontent.com/60663771/205303561-bc0e4a30-3584-4a3f-994b-a1abcc47ab01.png)
