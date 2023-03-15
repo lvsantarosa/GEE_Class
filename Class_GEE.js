@@ -1,4 +1,5 @@
 
+
 // ******************************************************************************************
 //  * Institution:  Sao Paulo State University 
 //  * Author:       Lucas Vituri Santarosa
@@ -13,6 +14,9 @@
 //b) Select import as "FeatureCollection",
 //c) In Property write "landcover" and in Value "1" for forest and "0" non-forest pair
 //4. Rename files and folder to export
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Cloud Mask
 //https://courses.spatialthoughts.com/end-to-end-gee.html#basic-supervised-classification
@@ -66,7 +70,9 @@ function normalize(image){
   return normalized
 }
 
-//Prepare the images 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Prepare the S2 images 
 var s2 = ee.ImageCollection("COPERNICUS/S2_SR")
 var rgbVis = {
   gamma: 1.2,
@@ -88,10 +94,35 @@ var comp_2022 = img2022.median().clip(roi).select('B2', 'B3', 'B4', 'B8', 'B11')
 //var comp_2022 = normalize(comp_2022); //This operation can be slow if you use this correction in necessary change the rgbVis to min = 0 and max = 1
 var comp_2022 = addIndices(comp_2022); 
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Get the Sentinel1 VV collection.
+var collection = ee.ImageCollection('COPERNICUS/S1_GRD')
+    .filter(ee.Filter.eq('instrumentMode', 'IW'))
+    .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VV'))
+    .filter(ee.Filter.eq('orbitProperties_pass', 'DESCENDING'))
+    .select(['VV']);
+
+// Create a 3 band stack by selecting from different periods (months)
+var im1 = ee.Image(collection.filterDate('2022-01-01', '2022-01-31').mean());
+var im2 = ee.Image(collection.filterDate('2022-06-01', '2022-06-30').mean());
+var im3 = ee.Image(collection.filterDate('2022-12-01', '2022-12-31').mean());
+print(im3)
+
+var stackVV = im1.addBands(im2).addBands(im3)
+var composite = stackVV.clip(roi); 
+
+var clip = ee.Image(composite).clip(roi);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Stack multspectral with SAR
+comp_2022 = comp_2022.addBands(clip)
+print(comp_2022)
 
 // Display the input composite.
-Map.addLayer(comp_2022, rgbVis, 'image');
-Map.addLayer(roi);
+Map.addLayer(comp_2022, rgbVis, 'S2');
+Map.addLayer(clip, {min: -25, max: 0}, 'S1');
 Map.centerObject(roi, 10);
 
 //Display indices
@@ -100,6 +131,11 @@ var bsi = comp_2022.select("bsi")
 
 Map.addLayer(ndvi, {palette: ['white','red','orange','yellow','green'],min: -0.4, max: 1}, 'ndvi');
 Map.addLayer(bsi, {palette: ['red','white','blue'],min: -0.4, max: 1}, 'bsi');
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Classification process
 
 // Merge the samples
 var gcp = forest.merge(no_forest).merge(forest) //the first clase is 0
@@ -149,7 +185,7 @@ var fmajority_2022 = classified_2022.reduceNeighborhood({
   kernel:kernel,
 });
 
-Map.addLayer(fmajority_2022, {min: 0, max: 2, palette: ['green', 'orange', 'blue']}, 'fmajority_2022');
+Map.addLayer(fmajority_2022, {min: 0, max: 2, palette: ['yellow', 'green']}, 'fmajority_2022');
 Map.centerObject(roi, 10)
 
 //Export monitoring
